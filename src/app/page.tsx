@@ -22,8 +22,26 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Check, X, Minus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Check, X } from "lucide-react";
 import type { Metadata } from 'next';
+import { AcquisitionForm } from "@/components/AcquisitionForm";
 
 export const metadata: Metadata = {
   title: 'Audit Pricing - INSPECTIA-WEB',
@@ -45,6 +63,7 @@ export default function Home() {
       ],
       buttonText: "Empezar ahora",
       buttonVariant: "secondary",
+      isContact: false,
     },
     {
       name: "Profesional",
@@ -61,6 +80,7 @@ export default function Home() {
       buttonText: "Seleccionar Plan",
       buttonVariant: "default",
       popular: true,
+      isContact: false,
     },
     {
       name: "Empresa",
@@ -76,6 +96,7 @@ export default function Home() {
       ],
       buttonText: "Contactar Ventas",
       buttonVariant: "secondary",
+      isContact: true,
     },
   ];
 
@@ -103,6 +124,47 @@ export default function Home() {
       answer: "¡Sí! Ofrecemos descuentos especiales para ONGs y organizaciones educativas. Contáctanos para más información."
     }
   ];
+
+  const renderPlanButton = (tier: typeof pricingTiers[number]) => {
+    if (tier.isContact) {
+      return (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="w-full" variant={tier.buttonVariant as any}>
+              {tier.buttonText}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Contactar a Ventas</AlertDialogTitle>
+              <AlertDialogDescription>
+                Puedes contactarnos al número +999999.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction>Cerrar</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      );
+    }
+
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="w-full" variant={tier.buttonVariant as any}>
+            {tier.buttonText}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adquirir Plan {tier.name}</DialogTitle>
+          </DialogHeader>
+          <AcquisitionForm />
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   return (
     <div className="bg-background text-foreground w-full dark:bg-black">
@@ -144,9 +206,7 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" variant={tier.buttonVariant as any}>
-                  {tier.buttonText}
-                </Button>
+                {renderPlanButton(tier)}
               </CardFooter>
             </Card>
           ))}
@@ -199,9 +259,22 @@ export default function Home() {
             <p className="text-muted-foreground mb-6">
               Estamos aquí para ayudarte a encontrar la solución perfecta para tu negocio. Contáctanos para un presupuesto personalizado.
             </p>
-            <Button size="lg">
-              Contactar con Ventas
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="lg">Contactar con Ventas</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Contactar a Ventas</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Puedes contactarnos al número +999999.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogAction>Cerrar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </section>
       </main>
