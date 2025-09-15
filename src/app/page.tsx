@@ -46,9 +46,23 @@ import type { Metadata } from 'next';
 import { AcquisitionForm } from "@/components/AcquisitionForm";
 import React from "react";
 
+type PricingTier = {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  buttonText: string;
+  buttonVariant: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | null | undefined;
+  popular?: boolean;
+  isContact: boolean;
+};
+
+
 export default function Home() {
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const pricingTiers = [
+  const [selectedTier, setSelectedTier] = React.useState<PricingTier | null>(null);
+
+  const pricingTiers: PricingTier[] = [
     {
       name: "Básico",
       price: "$49",
@@ -124,45 +138,10 @@ export default function Home() {
     }
   ];
 
-  const renderPlanButton = (tier: typeof pricingTiers[number]) => {
-    if (tier.isContact) {
-      return (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button className="w-full" variant={tier.buttonVariant as any}>
-              {tier.buttonText}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Contactar a Ventas</AlertDialogTitle>
-              <AlertDialogDescription>
-                Puedes contactarnos al número +999999.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction>Cerrar</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      );
+  const handleSelectPlan = (tier: PricingTier) => {
+    if (!tier.isContact) {
+      setSelectedTier(tier);
     }
-
-    return (
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="w-full" variant={tier.buttonVariant as any}>
-            {tier.buttonText}
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Adquirir Plan {tier.name}</DialogTitle>
-          </DialogHeader>
-          <AcquisitionForm onSuccess={() => setDialogOpen(false)} />
-        </DialogContent>
-      </Dialog>
-    );
   };
 
   return (
@@ -205,7 +184,30 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                {renderPlanButton(tier)}
+                {tier.isContact ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="w-full" variant={tier.buttonVariant}>
+                        {tier.buttonText}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Contactar a Ventas</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Puedes contactarnos al número +999999.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogAction>Cerrar</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <Button className="w-full" variant={tier.buttonVariant} onClick={() => handleSelectPlan(tier)}>
+                    {tier.buttonText}
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
@@ -277,6 +279,17 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      <Dialog open={!!selectedTier} onOpenChange={(open) => !open && setSelectedTier(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adquirir Plan {selectedTier?.name}</DialogTitle>
+          </DialogHeader>
+          <AcquisitionForm onSuccess={() => setSelectedTier(null)} />
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
-}
+
+    
