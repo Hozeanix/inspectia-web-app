@@ -1,3 +1,5 @@
+
+'use client';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,13 +44,10 @@ import {
 import { Check, X } from "lucide-react";
 import type { Metadata } from 'next';
 import { AcquisitionForm } from "@/components/AcquisitionForm";
-
-export const metadata: Metadata = {
-  title: 'Audit Pricing - INSPECTIA-WEB',
-  description: 'Planes de precios para el sistema de inspección de calidad con IA de INSPECTIA-WEB.',
-};
+import React from "react";
 
 export default function Home() {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const pricingTiers = [
     {
       name: "Básico",
@@ -150,7 +149,7 @@ export default function Home() {
     }
 
     return (
-      <Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className="w-full" variant={tier.buttonVariant as any}>
             {tier.buttonText}
@@ -160,7 +159,7 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle>Adquirir Plan {tier.name}</DialogTitle>
           </DialogHeader>
-          <AcquisitionForm />
+          <AcquisitionForm onSuccess={() => setDialogOpen(false)} />
         </DialogContent>
       </Dialog>
     );

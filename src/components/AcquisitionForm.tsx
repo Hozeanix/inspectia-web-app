@@ -23,7 +23,11 @@ const formSchema = z.object({
   company: z.string().min(2, "El nombre de la empresa debe tener al menos 2 caracteres."),
 });
 
-export function AcquisitionForm() {
+interface AcquisitionFormProps {
+  onSuccess?: () => void;
+}
+
+export function AcquisitionForm({ onSuccess }: AcquisitionFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,6 +43,9 @@ export function AcquisitionForm() {
       title: "Formulario Enviado",
       description: "Gracias por tu interés. Nos pondremos en contacto contigo pronto.",
     });
+    if (onSuccess) {
+      onSuccess();
+    }
   }
 
   return (
